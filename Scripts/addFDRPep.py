@@ -1,6 +1,7 @@
 # Written by Gaelen Hess
 # Last updated 20200526
-#
+# Gaelen Hess 03/13/2023
+# Made compatible for peptides
 #
 #
 
@@ -26,18 +27,6 @@ rec_file = name + '_record.txt'
 
 result_info=pd.read_csv(args.res_file, header=0)
 
-#print(result_info)
-
 result_info[args.col_name+' FDR ('+args.cor_method+')']=multipletests(result_info[args.col_name], method=args.cor_method)[1]
 
 result_info.to_csv(name+"_fdr.csv", header=True, index=False)
-
-###############################################################################
-# Appends note to existing record
-
-#with open(rec_file, 'a') as rec_open:
-#    rec_csv = csv.writer(rec_open, delimiter='\t')
-#    rec_csv.writerow(['addFDR.py', version])
-#    rec_csv.writerow(['Date', time.strftime("%d:%m:%Y")])
-#    rec_csv.writerow(['p-value Column', args.col_name])
-#    rec_csv.writerow(['Correction_Method', args.cor_method])
