@@ -10,7 +10,7 @@ The scripts use python3.7
 
 # Clone Git
 
-'git clone https://github.com/HessLabUW/PeptideGrowthAnalysis'
+>git clone https://github.com/HessLabUW/PeptideGrowthAnalysis
 
 # Step 1: Create index for library
 *This step requires bowtie to be installed*
@@ -162,7 +162,7 @@ For each comparison, it will generate a csv file (referred to as a result file) 
 12. Maximum Effect Estimate - Maximum Effect size in 95% confidence interval
 13. Individual Elements (List of individual sgRNAs and their effect sizes, each replicate will be in a separate column)
 
-# Calculate p-values and FDR
+# Step 5: Calculate p-values and FDR
 A common question is "how many permutations should I run?" As a rule of thumb, you should run 20 * Number of peptides)). The way this script works is that it picks a number of genes and calcualtes a castle score for this random "peptide". It saves this score in a _ref.csv file. Therefore, if you came back later to do more permutations, you can add onto the ones you already have previously performed. 
 
 #### addPermutationsPep.py
