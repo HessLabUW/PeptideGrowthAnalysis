@@ -1,5 +1,7 @@
 # PeptideGrowthAnalysis
 
+Analysis of proliferation screen for peptide libraries
+
 # Dependencies
 
 # Clone Git

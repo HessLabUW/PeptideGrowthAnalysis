@@ -1,9 +1,8 @@
 ###############################################################################
-# David Morgens
-# 04/06/2016
-#
 # Gaelen Hess 03/13/2023
 # Made compatible for peptides, individual elements have their own header columns
+#
+# adapted from castle by David Morgens
 ###############################################################################
 # Import neccessary modules
 

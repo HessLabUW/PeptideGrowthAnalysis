@@ -1,15 +1,15 @@
 ###############################################################################
-# David Morgens
-# 04/06/2016
 # Gaelen Hess 03/13/2023
-# Made compatible for peptides, individual elements have their own header columns
+# Made compatible for peptides
+#
+# adapted from castle by David Morgens
 ###############################################################################
 
 from __future__ import division
 import csv
 import time
 import argparse
-from screenFun import *
+from screenFunPep import *
 import sys
 
 
