@@ -1,8 +1,7 @@
 ###############################################################################
-# David Morgens
-# 03/18/2016
 # Gaelen Hess 03/13/2023
-# Made compatible for peptides
+# Made compatible for peptides, and altered for python3 by adding multiprocessing
+# adapted from castle (David Morgens)
 ###############################################################################
 # Imports neccessary modules
 
