@@ -17,7 +17,7 @@ The scripts use python3.7
 
 If you have generated an index for this library previously, you don't have to recreate it.  Using "python /PATH_TO_SCRIPTS/makeCounts.py -h" will show a list of previously made libraries. You can also open the screen_type_index.txt file in the Indices folder to see the list.
 
-The oligo_file is a .csv file that contains a sgRNA_ID in the first column and the sequence of the oligo ordered from a chip. These are often located in the /project6/HessLabCHGPM/OligoChips/ folder.  Given it encodes the full oligo, it includes other parts of the sequence that are not part of the sgRNA sequence that you don't want to include for the alignment. Therefore, we trim off all of these parts from the oligo in this script so we make an alignment that is just the sgRNA sequence.
+The oligo_file is a .csv file that contains a Peptide_ID in the first column and the sequence of the oligo ordered from a chip. The sequence encodes the full oligo including parts that include handles for PCR and cloning. These parts need to be trimmed off the oligo in this script, so we make an alignment against just the peptide sequence.
 
 #### makeIndices.py
 >usage: Make index for alignment [-h] [-s STRIM] [-e ETRIM] [-n NUMS] [-o] [-t] [-b BOWTIE] oligo_file short_name full_name
@@ -50,7 +50,8 @@ This generates the bowtie files in the Indices folder and updates the screen_typ
 *This step requires bowtie*
 
 #### makeCounts.py
->usage: makeCounts.py [-h] [-m MISMATCH] [-l READ_LENGTH] [-fi] [-b BOWTIE] [-a ADD_FILE] [-s {-,+}] [-p PROCESS]
+>usage: makeCounts.py [-h] [-m MISMATCH] [-t TRIM] [-l READ_LENGTH] [-fi] [-b BOWTIE] [-a ADD_FILE] [-s {-,+}]
+                     [-p PROCESS]
                      file_in name
                      {List of Library names}
 
@@ -66,33 +67,50 @@ This generates the bowtie files in the Indices folder and updates the screen_typ
   >*-h, --help*            show this help message and exit\
   >*-m MISMATCH, --mismatch MISMATCH*
                         The number of tolerated mismatches; default is 0\
+  >*-t TRIM, --trim TRIM  Select the number of bases to trim off start of read; default is 25\
   >*-l READ_LENGTH, --length READ_LENGTH*
-                        Select the number of bases to align; default is 17\
+                        Select the number of bases to align; default is 150\
   >*-fi, --filter*         Flag to filter too short reads\
   >*-b BOWTIE, --bowtie BOWTIE*
                         Location of Bowtie aligner; default is bowtie\
   >*-a ADD_FILE, --add_file ADD_FILE*
                         Location of additional FASTQ files, if any\
   >*-s {-,+}, --strand {-,+}*
-                        Filters reads by alignment strand; default is none\
+                        Filters reads by alignment strand; default is +\
   >*-p PROCESS, --process PROCESS*
-                        Number of processors to use; default is 8
-
-The defaults are okay for most processes. I run with "-m 0" unless the run had poor sequencing quality. For the CRKO library, I would use the default of "-l 17". For CRISPR-X libraries, I would use "-l 20" the full length of the sgRNA. For CRISPRi/a from the Weissman lab, I would use "-l 19".
+                        Number of processors to use; default is 12\
 
 ###### Output:
 
-For each fastq file, you will generate a _counts.csv file which lists each sgRNA and the number of counts detected. sgRNAs not detected will simply not be listed in this file.
+For each fastq file, you will generate a _counts.csv file which lists each peptide and the number of counts detected. sgRNAs not detected will simply not be listed in this file.
 
+# Step 3: Combine Replicates
+This script combines the count files for multiple replicates into a single count file that can be used for casTLE.
 
-# Combine Replicates
+It requires an parameter file, which is a csv with the following columns:
+>*Name* Name of replicate (A1, A2, etc.). It is important to make sure these match between treated and untreated samples.\
+>*FileSeed* Seed for count file that is being used (doesn't need the _counts.csv)
+>*Sample* Name for sample that the replicate it is part of. This will be the seed of the output file.
 
-# Use casTLE
+####mergeCounts.py
+>usage: mergeCountsPep.py [-h] parameter_file output_folder
 
-#### analyzeCounts.py
->usage: analyzeCounts.py [-h] [-n NEG_NAME] [-s SPLIT_MARK] [-x EXCLUDE [EXCLUDE ...]] [-t THRESH] [-k K]
-                        [-b {all,neg,tar}] [-z ZERO_FILES ZERO_FILES] [-c SCALE] [-I I_STEP] [-p NUMS] [-r REFERENCE]
-                        [-of] [-m] [-ro]
+###### positional arguments:
+  >*parameter_file*  csv file with ID, File Seed, Sample\
+  >*output_folder*   output folder for merged count files
+
+###### optional arguments:
+  >*-h, --help*      show this help message and exit
+
+###### Output:
+This script generates a _counts.csv for each sample that is referenced in the parameter file. The Sample name + "_counts.csv" is the resulting file.
+
+# Step 4: Use casTLE
+
+#### analyzeCountsPep.py
+>usage: analyzeCountsPep.py [-h] [-n NEG_NAME] [-s SPLIT_MARK] [-x EXCLUDE [EXCLUDE ...]] [-t THRESH] [-k K]
+                           [-b {all,neg,tar}] [-z ZERO_FILES ZERO_FILES] [-c SCALE] [-I I_STEP] [-p NUMS] [-r REFERENCE]
+                           [-of] [-m] [-ro]
                         unt_file trt_file name
 
 Compares count files using casTLE
@@ -107,7 +125,7 @@ Compares count files using casTLE
   >*-n NEG_NAME, --neg_name NEG_NAME*
                         Symbol used to denote negative controls. Default is 0.\
   >*-s SPLIT_MARK, --split SPLIT_MARK*
-                        Delimiter for element name. Default is _\
+                        Delimiter for element name. Default is __\
   >*-x EXCLUDE [EXCLUDE ...], --exclude EXCLUDE [EXCLUDE ...]*
                         Only include elements containing substrings.\
   >*-t THRESH, --threshhold THRESH*
@@ -123,8 +141,6 @@ Compares count files using casTLE
                         Step size in grid search; default is 0.1\
   >*-p NUMS, --proccessors NUMS*
                         Number of proccessors to use; default is 20\
-  >*-r REFERENCE, --reference REFERENCE*
-                        Location of reference files; default is GeneRef\
   >*-of, --override_file*  Overrides restriction of output to Results folder\
   >*-m, --mouse*           Uses mouse gene information.\
   >*-ro, --record*         Allows script to run without record of count files.
@@ -144,16 +160,13 @@ For each comparison, it will generate a csv file (referred to as a result file) 
 10. casTLE p-value - will be N/A for this, but will be filled in later
 11. Minimum Effect Estimate - Minimum Effect size in 95% confidence interval
 12. Maximum Effect Estimate - Maximum Effect size in 95% confidence interval
-13. Individual Elements (List of individual sgRNAs and their effect sizes)
-
+13. Individual Elements (List of individual sgRNAs and their effect sizes, each replicate will be in a separate column)
 
 # Calculate p-values and FDR
-There are two versions for this.  addPermutations.py is for a single replicate and addCombo.py is for two combined replicates. I generally don't run addPermutations if I am going to analyze it as combined replicates.
+A common question is "how many permutations should I run?" As a rule of thumb, you should run 20 * Number of peptides)). The way this script works is that it picks a number of genes and calcualtes a castle score for this random "peptide". It saves this score in a _ref.csv file. Therefore, if you came back later to do more permutations, you can add onto the ones you already have previously performed. 
 
-A common question is "how many permutations should I run?" As a rule of thumb, you should run 20 * Number of genes/elements)). For example, for a genome wide screen of 20,000 genes, you should run approximately 400,000 permutations. The way this script works is that it picks a number of genes and calcualtes a castle score for this random "gene". It saves this score in a _ref.csv file. Therefore, if you came back later to do more permutations, you can add onto the ones you already have previously performed. 
-
-#### addPermutations.py
-usage: addPermutations.py [-h] [-p NUMS] [-e] [-t] [-r RATIO_COL] [-m] res_file perm_num
+#### addPermutationsPep.py
+usage: addPermutationsPep.py [-h] [-p NUMS] [-e] [-t] [-r RATIO_COL] [-m] res_file perm_num
 
 Adds permutations for p-values
 
@@ -169,15 +182,13 @@ Adds permutations for p-values
   >*-t, --out_time*        Output timestamps.\
   >*-r RATIO_COL, --ratio_col RATIO_COL*
                         Column containing ratio scores\
-  >*-m, --mouse*           Uses mouse gene information.
 
 ###### Output
 
 This will fill in the "casTLE p-value" column in the combo result file.  It will also generate the _ref.csv file that contains the casTLE scores for all of the permutations.
 
-
 #### addFDRPep.py
-usage: addFDRPep.py [-h] res_file col_name cor_method
+>usage: addFDRPep.py [-h] res_file col_name cor_method
 
 Generates FDR based on results files
 

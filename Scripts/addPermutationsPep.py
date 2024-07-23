@@ -45,9 +45,6 @@ parser.add_argument('-t', '--out_time', action='store_true',
 parser.add_argument('-r', '--ratio_col', default=5, type=int,
                         help='Column containing ratio scores')
 
-parser.add_argument('-m', '--mouse', action='store_true',
-                        help='Uses mouse gene information.')
-
 # Saves all input to object args
 args = parser.parse_args()
 
@@ -64,19 +61,6 @@ screen_type, neg_name, split_mark, exclude = info
 thresh, K, back, I_step, scale, draw_num = param
 
 print('Drawing ' + str(draw_num) + ' random elements')
-
-
-###############################################################################
-# Pulls in gene info, IDs, as well as GO terms
-
-print('Retrieving gene information')
-
-# Uses different genetic information depending whether a human or mouse screen
-geneID2Name, geneID2Info, geneName2ID, geneEns2Name = retrieveInfo(mouse=args.mouse)
-
-# Retrieves GO information
-geneID2Comp, geneID2Proc, geneID2Fun = retrieveGO()
-
 
 ###############################################################################
 # Pulls in untreated and treated counts, and filters by defined threshold

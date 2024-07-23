@@ -80,10 +80,6 @@ parser.add_argument('-p', '--proccessors', dest='nums',
                 default=20)
 
 # Options for overriding behavior
-parser.add_argument('-r', '--reference',
-                help='Location of reference files; default is GeneRef', type=str,
-                default='GenRef')
-
 parser.add_argument('-of', '--override_file', action='store_true',
                 help='Overrides restriction of output to Results folder')
 
