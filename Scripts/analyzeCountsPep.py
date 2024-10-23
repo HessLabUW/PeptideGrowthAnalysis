@@ -83,9 +83,6 @@ parser.add_argument('-p', '--proccessors', dest='nums',
 parser.add_argument('-of', '--override_file', action='store_true',
                 help='Overrides restriction of output to Results folder')
 
-parser.add_argument('-m', '--mouse', action='store_true',
-                help='Uses mouse gene information.')
-
 parser.add_argument('-ro', '--record', action='store_false',
                 help='Allows script to run without record of count files.')
 
@@ -177,19 +174,6 @@ else:
     trt_seq_add_file = 'Overridden'
     trt_out = 'Overridden'
     trt_screen_type = 'Overridden'
-
-
-###############################################################################
-# Pulls in gene info, IDs, as well as GO terms
-
-print('Retrieving gene information')
-
-# Retrieves gene information
-geneID2Name, geneID2Info, geneName2ID, geneEns2Name = retrieveInfo(mouse=args.mouse)
-
-# Retrieves GO information
-geneID2Comp, geneID2Proc, geneID2Fun = retrieveGO()
-
 
 ###############################################################################
 # Pulls in untreated and treated counts and filters by defined threshold
