@@ -92,7 +92,7 @@ It requires an parameter file, which is a csv with the following columns:
 >*FileSeed* Seed for count file that is being used (doesn't need the _counts.csv)
 >*Sample* Name for sample that the replicate it is part of. This will be the seed of the output file.
 
-####mergeCounts.py
+#### mergeCounts.py
 >usage: mergeCountsPep.py [-h] parameter_file output_folder
 
 ###### positional arguments:
