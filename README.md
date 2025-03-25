@@ -148,19 +148,15 @@ Compares count files using casTLE
 ###### Output
 
 For each comparison, it will generate a csv file (referred to as a result file) with the following columns:
-1. #GeneID - HGNC ID number
-2. Symbol - HGNC Symbol
-3. GeneInfo - Full Name
-4. Localization - GO Term Localization
-5. Process - GO Term Process
-6. Function - GO Term Function
-7. Element # - # of sgRNAs detected
-8. casTLE Effect - Effect of gene perturbation (roughly think of as a predicted Log2 Fold Change)
-9. casTLE Score - Statistical score for significance of effect
-10. casTLE p-value - will be N/A for this, but will be filled in later
-11. Minimum Effect Estimate - Minimum Effect size in 95% confidence interval
-12. Maximum Effect Estimate - Maximum Effect size in 95% confidence interval
-13. Individual Elements (List of individual sgRNAs and their effect sizes, each replicate will be in a separate column)
+1. #GeneID - Peptide ID
+2. Symbol - Peptide ID
+3. Element # - # of replicates detected
+4. casTLE Effect - Effect of gene perturbation (roughly think of as a predicted Log2 Fold Change)
+5. casTLE Score - Statistical score for significance of effect
+6. casTLE p-value - will be N/A for this, but will be filled in later
+7. Minimum Effect Estimate - Minimum Effect size in 95% confidence interval
+8. Maximum Effect Estimate - Maximum Effect size in 95% confidence interval
+9. Individual Elements (List of individual sgRNAs and their effect sizes, each replicate will be in a separate column)
 
 # Step 5: Calculate p-values and FDR
 A common question is "how many permutations should I run?" As a rule of thumb, you should run 20 * Number of peptides)). The way this script works is that it picks a number of genes and calcualtes a castle score for this random "peptide". It saves this score in a _ref.csv file. Therefore, if you came back later to do more permutations, you can add onto the ones you already have previously performed. 
